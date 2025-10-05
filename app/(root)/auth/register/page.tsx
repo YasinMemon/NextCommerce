@@ -46,10 +46,28 @@ function Register() {
      }
    })
  
-   function handleRegisterSubmit(values: z.infer<typeof formSchema>){
-     console.log(values)
+   async function handleRegisterSubmit(values: z.infer<typeof formSchema>){
+     setLoading(true)
+     const response = await fetch("/api/auth/register", {
+       method: "POST",
+       headers: {
+          "Content-Type": "application/json"
+       },
+       body: JSON.stringify(values)
+     })
+    const data = await response.json()
+    if (!response.ok) {
+      // Handle error
+      console.error(data)
+      setLoading(false)
+      return
+    }
+
+    // Handle success
+    console.log(data)
+    setLoading(false)
    }
- 
+
    return <Card>
        <CardContent>
          <div className='flex justify-center items-center' >

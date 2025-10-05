@@ -3,6 +3,8 @@ import { zodSchema } from "@/lib/zodSchema";
 import UserModel from "@/models/userModel";
 import { SignJWT } from "jose";
 import { NextRequest, NextResponse } from "next/server";
+import { emailVerificationLink } from "../../../../email/emailVarificationLink";
+import { sendMail } from "@/lib/sendMail";
 
 export async function POST(request: NextRequest) {
     try {
@@ -52,7 +54,13 @@ export async function POST(request: NextRequest) {
             .setProtectedHeader({ alg: 'HS256' })
             .sign(secret)
 
-            
+        sendMail("Verify Your Email", email, emailVerificationLink(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/${token}`))  
+        
+        return NextResponse.json({
+            success: true,
+            status: 201,
+            message: "User registered successfully. Please verify your email.",
+        });
     } catch (err) {
         return NextResponse.json({
             success: false,
