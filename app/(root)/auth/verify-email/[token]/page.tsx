@@ -13,32 +13,37 @@ import { CLIENT_HOME } from '@/app/routes/clientRoutes'
 function VerifyEmail({ params } : { params: { token: string } }) {
   const { token } = params
   const [isVerified, setIsVerified] = React.useState(false)
+  
   useEffect(() => {
-    const verify = async () => {
-      try {
-        const response = await fetch('/api/auth/verifyemail', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
+  const verify = async () => {
+    try {
+      const response = await fetch('/api/auth/verifyemail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('Email verified successfully:', data);
-          setIsVerified(true);
-        } else {
-          const errorData = await response.json();
-          console.error('Error verifying email:', errorData);
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Email verified successfully:', data);
+        setIsVerified(true);
+      } else {
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = { message: 'Something went wrong' };
         }
-      } catch (error) {
-        console.error('Error verifying email:', error);
+        console.error('Error verifying email:', errorData);
       }
+    } catch (error) {
+      console.error('Error verifying email:', error);
     }
+  };
 
-    verify()
-  }, [])
+  verify();
+}, [token]);
+
   return (
     <Card>
       <CardContent>
