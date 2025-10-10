@@ -2,13 +2,13 @@ import { z } from "zod";
 
 export const zodSchema = z.object({
   fullName: z
-      .string()
-      .trim()
-      .min(3, { message: "Full name must be at least 3 characters long" })
-      .max(50, { message: "Full name must be less than 50 characters" })
-      .regex(/^[a-zA-Z\s]+$/, {
-        message: "Full name can only contain letters and spaces",
-  }),
+    .string()
+    .trim()
+    .min(3, { message: "Full name must be at least 3 characters long" })
+    .max(50, { message: "Full name must be less than 50 characters" })
+    .regex(/^[a-zA-Z\s]+$/, {
+      message: "Full name can only contain letters and spaces",
+    }),
 
   email: z
     .string()
@@ -28,6 +28,12 @@ export const zodSchema = z.object({
     ),
 
   confirmPassword: z.string(),
+
+  otp: z
+    .string()
+    .trim()
+    .length(6, { message: "OTP must be exactly 6 digits" })
+    .regex(/^\d{6}$/, { message: "OTP must contain only numbers" }),
 }).superRefine((data, ctx) => {
   if (data.password !== data.confirmPassword) {
     ctx.addIssue({

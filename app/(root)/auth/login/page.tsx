@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input'
 import { ButtonLoading } from '@/components/application/ButtonLoading'
 import Link from 'next/link'
 import { CLIENT_REGISTER } from '@/app/routes/clientRoutes'
+import OtpVerificationForm from '@/components/application/OtpVerificationForm'
 
 const Login = () => {
   const formSchema = zodSchema.pick({
@@ -34,6 +35,7 @@ const Login = () => {
   })
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false)
+  const [otpEmail, setOtpEmail] = useState<string>("")
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,14 +56,14 @@ const Login = () => {
        })
       const data = await response.json()
       if (!response.ok) {
-        // Handle error
         console.error(data)
         setLoading(false)
         return
       }
   
       // Handle success
-      console.log(data)
+      setOtpEmail(values.email)
+      form.reset()
       setLoading(false)
      }
   return <Card>
@@ -69,52 +71,53 @@ const Login = () => {
         <div className='flex justify-center items-center' >
           <Image src={Logo.src} width={Logo.width} height={Logo.height} className='max-w-[150px]' alt='logo' />
         </div>
-        <div className='text-center' >
+        {!otpEmail ? <>
+         <div className='text-center' >
         <h1 className='text-2xl font-semibold' >Login into Account</h1>
         <p>Login into your account by filling out the form below</p>
         </div>
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleLoginSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem className='mt-4' >
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input placeholder="example@gmail.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="password"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleLoginSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className='mt-4' >
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input placeholder="example@gmail.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
 
-          render={({ field }) => (
-            <FormItem className='relative' >
-              <FormLabel>password</FormLabel>
-              <FormControl>
-              </FormControl>
-                <Input type={showPassword ? "text" : "password"} placeholder="*****" {...field} />
-                <button 
-                type="button" 
-                onClick={() => setShowPassword(!showPassword)} 
-                className='absolute top-1/2 right-4 cursor-pointer' 
-                >
-                  {
-                    showPassword ? <FaEyeSlash/> : <IoMdEye /> 
-                  }
-                  </button>  
-                    
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <ButtonLoading type="submit" text="Login" isLoading={loading} className='w-full cursor-pointer' />
-      </form>
-    </Form>
+              render={({ field }) => (
+                <FormItem className='relative' >
+                  <FormLabel>password</FormLabel>
+                  <FormControl>
+                  </FormControl>
+                    <Input type={showPassword ? "text" : "password"} placeholder="*****" {...field} />
+                    <button 
+                    type="button" 
+                    onClick={() => setShowPassword(!showPassword)} 
+                    className='absolute top-1/2 right-4 cursor-pointer' 
+                    >
+                      {
+                        showPassword ? <FaEyeSlash/> : <IoMdEye /> 
+                      }
+                      </button>  
+                        
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <ButtonLoading type="submit" text="Login" isLoading={loading} className='w-full cursor-pointer' />
+          </form>
+        </Form>
         <div className='mt-4 flex justify-center items-center gap-1' >  
           <p>Don't have account</p>
           <Link href={CLIENT_REGISTER} className="text-primary underline cursor-pointer" > Create Account </Link>
@@ -122,6 +125,14 @@ const Login = () => {
         <div>
           <p className='text-primary underline text-center' >Forget Password?</p>
         </div>
+        </> : <>
+        <OtpVerificationForm 
+          email={otpEmail}
+          onSubmit={() => {}}
+          loading={false}
+        />
+        </>}
+       
       </CardContent>
     </Card>
 }
