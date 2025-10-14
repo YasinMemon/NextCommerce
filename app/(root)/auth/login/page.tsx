@@ -1,4 +1,5 @@
 "use client"
+
 import { Card, CardContent } from '@/components/ui/card'
 import React, { useState } from 'react'
 import Logo from "@/public/images/logo-black.png"
@@ -66,6 +67,11 @@ const Login = () => {
       form.reset()
       setLoading(false)
      }
+
+     async function handleOtpVerification(otp: string) {
+      setLoading(true)
+     }
+
   return <Card>
       <CardContent>
         <div className='flex justify-center items-center' >
@@ -128,7 +134,7 @@ const Login = () => {
         </> : <>
         <OtpVerificationForm 
           email={otpEmail}
-          onSubmit={() => {}}
+          onSubmit={handleOtpVerification}
           loading={false}
         />
         </>}
