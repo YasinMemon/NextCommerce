@@ -68,9 +68,26 @@ const Login = () => {
       setLoading(false)
      }
 
-     async function handleOtpVerification(otp: string) {
+     async function handleOtpVerification(values: { otp: string, email: string }) {
       setLoading(true)
-     }
+      const response = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(values)
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        console.error(data)
+        setLoading(false)
+        return
+      }
+      // Handle success
+      setOtpEmail(values.email)
+      form.reset()
+      setLoading(false)
+    }
 
   return <Card>
       <CardContent>
