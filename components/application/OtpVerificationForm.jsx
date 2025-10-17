@@ -1,7 +1,7 @@
 "use client"
 
 import { zodSchema } from '@/lib/zodSchema'
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp'
@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { ButtonLoading } from './ButtonLoading'
 
 const OtpVerificationForm = ({ email, onSubmit, loading }) => {
+    const [resendingOtp, setResendingOtp] = useState(false);
     const formSchema = zodSchema.pick({
         otp: true,
         email: true
@@ -24,6 +25,29 @@ const OtpVerificationForm = ({ email, onSubmit, loading }) => {
 
     const handleOtpVerification = async (values) => {
         onSubmit(values)
+    }
+
+    const resendOtp = async () => {
+        try {
+            setResendingOtp(true);
+            const response = await fetch('/api/auth/resend-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message || 'OTP has been resent to your email');
+            } else {
+                alert(data.message || 'Failed to resend OTP');
+            }
+        } catch (error) {
+            console.error('Error resending OTP:', error);
+        } finally {
+            setResendingOtp(false);
+        }
     }
 
     return (
@@ -61,8 +85,10 @@ const OtpVerificationForm = ({ email, onSubmit, loading }) => {
 
                     <div className='flex justify-center mt-4 space-y-4 flex-col'>
                         <ButtonLoading type="submit" text="Verify OTP" isLoading={loading} className='w-full cursor-pointer' />
-                        <div>
-                            <p className="text-sm text-gray-600">Didn't receive the OTP? <a href="#" className="text-blue-600">Resend OTP</a></p>
+                        <div className='text-center' >
+                            <p className="text-sm text-gray-600">Didn't receive the OTP? <span className="text-blue-600 cursor-pointer" onClick={resendOtp} >
+                                {resendingOtp ? 'Resending...' : 'Resend OTP'}
+                            </span></p>
                         </div>
                     </div>
                 </form>

@@ -27,8 +27,12 @@ import { ButtonLoading } from '@/components/application/ButtonLoading'
 import Link from 'next/link'
 import { CLIENT_REGISTER } from '@/app/routes/clientRoutes'
 import OtpVerificationForm from '@/components/application/OtpVerificationForm'
+import { useDispatch } from 'react-redux'
+import { login } from '@/store/reducers/authReducer'
 
 const Login = () => {
+  const dispatch = useDispatch();
+
   const formSchema = zodSchema.pick({
     email: true,
   }).extend({
@@ -59,6 +63,7 @@ const Login = () => {
       if (!response.ok) {
         console.error(data)
         setLoading(false)
+        dispatch(login(data.user)); // Dispatch login action with user data
         return
       }
   

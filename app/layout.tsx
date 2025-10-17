@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Assistant } from "next/font/google";
 import "./globals.css";
+import GlobalProvider from "@/components/application/GlobalProvider";
 
 const AssistantFont = Assistant({
   weight: ["400", "500", "600", "700", "800"],
@@ -22,8 +23,10 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${AssistantFont.className} antialiased`}
-      >
-        {children}
+        >
+        <GlobalProvider>
+          {children}
+        </GlobalProvider>
       </body>
     </html>
   );
